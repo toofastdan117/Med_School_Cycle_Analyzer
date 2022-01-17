@@ -1,0 +1,1 @@
+This is a web program based in python to upload a formatted excel file of your medical school application cycle (see example) and plot a line graph charting your progress.
