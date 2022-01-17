@@ -2,6 +2,7 @@
 
 # Importing the required packages
 import streamlit as st
+from PIL import Image
 import pandas as pd
 import numpy as np
 import datetime as datetime
@@ -9,7 +10,7 @@ import plotly.express as px
 
 # Setting the page title using streamlit
 st.set_page_config(page_title="Medical School Application Plotter")
-st.title("Medical School Application Plotter 📈")
+st.title("Medical School Application Plotter 🥼🩺📈")
 st.markdown("---")
 
 # User imput start date of AMCAS submission and current date
@@ -21,7 +22,14 @@ end_date = pd.to_datetime(end_date)
 st.markdown("---")
 
 # Uploading an excel file containing schools, application actions, and dates
-st.subheader("Upload a formatted Excel file (file type = '.xlsx')")
+st.subheader("Upload a formatted Excel file:")
+with st.expander("Click Here for Instructions"):
+    st.write("1.  Create a 'Schools' column with your school names (could be dummy names if you want to keep them anonymous). Make sure to name this column 'Schools'.")
+    st.write("2.  Create other columns for all other application events. You can name these whatever you want.")
+    st.write("3.  Enter dates for all recorded events. For schools that have ignored you, or events that you haven't heard of yet, leave these blank.")
+    st.write("4.  Save the file and make sure that it is in '.xlsx' format. Once this is done, it is ready to upload!")
+    image = Image.open("images/example_excel_doc_dark.png")
+    st.image(image, caption="Example of a formatted excel doc")
 uploaded_file = st.file_uploader("Upload an xlsx file:", type="xlsx")
 
 # If a user uploaded an xlsx file, display it and display a plotly line graph
@@ -76,11 +84,6 @@ if uploaded_file:
         group = group.sort_values("Dates", ascending=True)
         df_sort_list2.append(group)
     df_sort2 = pd.concat(df_sort_list2, axis=0).reset_index(drop=True)
-
-    # Displaying the formatted dataframe after processing
-    #st.subheader("Processed excel file:")
-    #st.dataframe(df_sort2)
-    #st.markdown("---")
 
     # Plotting the Application Cycle as a Line Graph
     fig = px.line(df_sort2, x="Dates", y="tracker", color="Actions",
