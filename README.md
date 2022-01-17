@@ -9,7 +9,7 @@
 4.  Save the file and make sure that it is in ".xlsx" format.  Once this is done, it is ready to upload!
 
 ### Example of a formatted excel file used for input:
-![](images/example_excel_doc.png)
+![](images/example_excel_doc_dark.png)
 
 ### Example Output Line Graph:
 ![](images/example_line_graph.png)
