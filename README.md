@@ -1,6 +1,6 @@
 # **Medical School Application Cycle Analyzer**
 
-## This is a web program designed for users to upload a formatted excel file of your medical school application cycle (see example) and plot a line graph charting your progress.  The line graph is interactive and may contain more information than a typical Sankey diagram.
+### This is a web program designed for users to upload a formatted excel file of your medical school application cycle (see example) and plot a line graph charting your progress.  The line graph is interactive and may contain more information than a typical Sankey diagram.
 
 ### Steps for making a formatted excel doc used for imput:
 1.  Create a "Schools" column with your school names (could be dummy names if you want to keep them anonymous).  Make sure to name this column "Schools".
@@ -11,5 +11,5 @@
 ### Example of a formatted excel file used for input:
 ![](images/example_excel_doc.png)
 
-## Example Output Line Graph:
+### Example Output Line Graph:
 ![](images/example_line_graph.png)
