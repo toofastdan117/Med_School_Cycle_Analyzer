@@ -10,9 +10,18 @@ import plotly.express as px
 # Setting the page title using streamlit
 st.set_page_config(page_title="Medical School Application Plotter")
 st.title("Medical School Application Plotter 📈")
-st.subheader("Upload a formatted Excel file (file type = '.xlsx')")
+st.markdown("---")
+
+# User imput start date of AMCAS submission and current date
+st.subheader("Enter in the Start and End Dates of your Application Cycle:")
+start_date = st.date_input("When did you submit your AMCAS primary application?")
+start_date = pd.to_datetime(start_date)
+end_date = st.date_input("What is the current date or the date of the end of your application cycle?")
+end_date = pd.to_datetime(end_date)
+st.markdown("---")
 
 # Uploading an excel file containing schools, application actions, and dates
+st.subheader("Upload a formatted Excel file (file type = '.xlsx')")
 uploaded_file = st.file_uploader("Upload an xlsx file:", type="xlsx")
 
 # If a user uploaded an xlsx file, display it and display a plotly line graph
@@ -28,8 +37,10 @@ if uploaded_file:
 
     # Processing the dataframe by getting the columns (actions) and melting
     column_names = list(df.columns)
-    column_names.remove("Schools")
-    df = df.melt(id_vars="Schools", value_vars=column_names, var_name="Actions", value_name="Dates")
+    column_names = [s.lower() for s in column_names]
+    df.columns = column_names
+    column_names.remove("schools")
+    df = df.melt(id_vars="schools", value_vars=column_names, var_name="Actions", value_name="Dates")
     df["Dates"] = pd.to_datetime(df["Dates"])
 
     # Grouping the application actions and sorting by date
@@ -55,16 +66,11 @@ if uploaded_file:
     df_sort1["tracker"] = numbers
 
     # Adding the start date of the cycle and the current date and sorting
-    start = datetime.datetime(2021, 5, 28)  # AMCAS primary submission date
-    start = pd.to_datetime(start)
-    now = datetime.datetime.now()  # current date
-    now = now.strftime("%m/%d/%Y %H:%M:%S")
-    now = pd.to_datetime(now)
     df_gb2 = df_sort1.groupby("Actions")
     df_sort_list2 = []
     for name, group in df_gb2:
-        df_temp1 = {"Schools": "Start", "Actions": group["Actions"].unique()[0], "Dates": start, "tracker": 0}
-        df_temp2 = {"Schools": "End", "Actions": group["Actions"].unique()[0], "Dates": now,
+        df_temp1 = {"schools": "Start", "Actions": group["Actions"].unique()[0], "Dates": start_date, "tracker": 0}
+        df_temp2 = {"schools": "End", "Actions": group["Actions"].unique()[0], "Dates": end_date,
                "tracker": np.max(group["tracker"])}
         group = group.append([df_temp1, df_temp2], ignore_index=True)
         group = group.sort_values("Dates", ascending=True)
@@ -78,7 +84,7 @@ if uploaded_file:
 
     # Plotting the Application Cycle as a Line Graph
     fig = px.line(df_sort2, x="Dates", y="tracker", color="Actions",
-                  hover_data=["Schools", "Actions", "Dates"], markers=True, line_shape="hv",
+                  hover_data=["schools", "Actions", "Dates"], markers=True, line_shape="hv",
                   labels={
                       "Dates": "Dates",
                       "tracker": "Number of Events",
