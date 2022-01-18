@@ -85,8 +85,14 @@ if uploaded_file:
         df_sort_list2.append(group)
     df_sort2 = pd.concat(df_sort_list2, axis=0).reset_index(drop=True)
 
+    # Selecting colors for the plotly line graph
+    action_color_dict = {}
+    for action in sorted(column_names):
+        hex_color = st.color_picker(f"Pick a color to represent {action}:")
+        action_color_dict[action] = hex_color
+
     # Plotting the Application Cycle as a Line Graph
-    fig = px.line(df_sort2, x="Dates", y="tracker", color="Actions",
+    fig = px.line(df_sort2, x="Dates", y="tracker", color="Actions", color_discrete_map=action_color_dict,
                   hover_data=["schools", "Actions", "Dates"], markers=True, line_shape="hv",
                   labels={
                       "Dates": "Dates",
