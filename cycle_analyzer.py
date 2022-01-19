@@ -10,7 +10,7 @@ import plotly.express as px
 import base64
 from io import StringIO, BytesIO
 
-# Defining some functions for downloading html plotly charts
+### Defining some functions for downloading html plotly charts
 def generate_html_download_link(fig2):
     # Credit Plotly: https://discuss.streamlit.io/t/download-plotly-plot-as-html/4426/2
     towrite = StringIO()
@@ -20,12 +20,13 @@ def generate_html_download_link(fig2):
     href = f'<a href="data:text/html;charset=utf-8;base64, {b64}" download="cycle_line_plot.html">Download Plot</a>'
     return st.markdown(href, unsafe_allow_html=True)
 
-# Setting the page title using streamlit
+### Setting the page title using streamlit
 st.set_page_config(page_title="Medical School Application Plotter")
 st.title("Medical School Application Plotter 🥼🩺📈")
+st.write("Link to toofastdan's Github Repo: https://github.com/toofastdan117/Med_School_Cycle_Analyzer")
 st.markdown("---")
 
-# User imput start date of AMCAS submission and current date
+### User imput start date of AMCAS submission and current date
 st.subheader("Enter in the Start and End Dates of your Application Cycle:")
 start_date = st.date_input("When did you submit your AMCAS primary application?")
 start_date = pd.to_datetime(start_date)
@@ -33,7 +34,7 @@ end_date = st.date_input("What is the current date or the date of the end of you
 end_date = pd.to_datetime(end_date)
 st.markdown("---")
 
-# Uploading an excel file containing schools, application actions, and dates
+### Uploading an excel file containing schools, application actions, and dates.  Include an example + instructions with an expander.
 st.subheader("Upload a formatted Excel file:")
 with st.expander("Click Here for Instructions"):
     st.write("1.  Make a new excel file.")
@@ -45,7 +46,7 @@ with st.expander("Click Here for Instructions"):
     st.image(image, caption="Example of a formatted excel doc")
 uploaded_file = st.file_uploader("Upload an xlsx file:", type="xlsx")
 
-# If a user uploaded an xlsx file, display it and display a plotly line graph
+### If a user uploaded an xlsx file, display it and display a plotly line graph
 if uploaded_file:
     # Separating line
     st.markdown("---")
@@ -79,7 +80,6 @@ if uploaded_file:
         df_temp = df_sort1[df_sort1["Actions"] == action]
         for d in df_temp["Dates"]:
             if pd.isnull(d):
-                n = n
                 numbers.append(n)
             else:
                 n = n + 1
@@ -91,27 +91,29 @@ if uploaded_file:
     df_sort_list2 = []
     for name, group in df_gb2:
         df_temp1 = {"schools": "Start", "Actions": group["Actions"].unique()[0], "Dates": start_date, "tracker": 0}
-        df_temp2 = {"schools": "End", "Actions": group["Actions"].unique()[0], "Dates": end_date,
-               "tracker": np.max(group["tracker"])}
+        df_temp2 = {"schools": "End", "Actions": group["Actions"].unique()[0], "Dates": end_date, "tracker": np.max(group["tracker"])}
         group = group.append([df_temp1, df_temp2], ignore_index=True)
-        group = group.sort_values("Dates", ascending=True)
+        group = group.sort_values(["Dates", "tracker"], ascending=True)
         df_sort_list2.append(group)
     df_sort2 = pd.concat(df_sort_list2, axis=0).reset_index(drop=True)
 
-    #### Dropdown menu for light mode or dark mode for the plotly line graph
-    response = st.selectbox("Would you like the graph in light-mode or dark-mode?",
-                            ("light-mode", "dark-mode"))
-    st.write("You selected:", response)
-    response_dict = {"light-mode": "simple_white", "dark-mode": "plotly_dark"}
-    response_answer = response_dict[response]
-
-    #### Selecting colors for the plotly line graph
+    ### Selecting colors for the plotly line graph
+    st.subheader("Customization Section - Pick Colors")
     action_color_dict = {}
     for action in sorted(column_names):
         hex_color = st.color_picker(f"Pick a color to represent {action}:")
         action_color_dict[action] = hex_color
 
-    #### Plotting the Application Cycle as a Line Graph
+    ### Dropdown menu for light mode or dark mode for the plotly line graph
+    response = st.selectbox("Would you like the graph in light-mode or dark-mode?",
+                            ("light-mode", "dark-mode"))
+    st.write("You selected:", response)
+    response_dict = {"light-mode": "simple_white", "dark-mode": "plotly_dark"}
+    response_answer = response_dict[response]
+    st.markdown("---")
+
+    ### Plotting the Application Cycle as a Line Graph
+    st.subheader("Application Cycle Line Graph")
     fig = px.line(df_sort2, x="Dates", y="tracker", color="Actions", color_discrete_map=action_color_dict,
                   hover_data=["schools", "Actions", "Dates"], markers=True, line_shape="hv",
                   labels={
@@ -121,18 +123,16 @@ if uploaded_file:
                   },
                   title="Application Cycle Plot",
                   template=response_answer)
-    fig.update_layout(
-        title={'text': "Application Cycle Plot", 'y': 0.90, 'x': 0.44, 'xanchor': 'center', 'yanchor': 'top'})
-    st.subheader("Application Cycle Line Graph:")
+    fig.update_layout(title={'text': "Application Cycle Plot", 'y': 0.90, 'x': 0.44, 'xanchor': 'center', 'yanchor': 'top'})
     st.plotly_chart(fig)
 
     ### Download section
-    st.markdown("---")
     # Plotting the a second, updated figure for downloading
     fig2 = px.line(df_sort2, x="Dates", y="tracker", color="Actions",
                   hover_data=["schools", "Actions", "Dates"], markers=True, line_shape="hv",
                   color_discrete_map=action_color_dict,
                   template=response_answer, width=1200, height=700)
+
     # Updating the figure with title + axes + legend labels, font sizes for the title + x, y ticks + legend size, and x, y axes labels.  Then centering the title.
     fig2.update_layout(title="Application Cycle Plot",
                       xaxis_title="Number of Events",
@@ -143,7 +143,9 @@ if uploaded_file:
     fig2.update_layout(legend=dict(font=dict(size=16)))
     fig2.update_xaxes(title_font=dict(size=20))
     fig2.update_yaxes(title_font=dict(size=20))
-    fig2.update_layout(
-        title={'text': "Application Cycle Plot", 'y': 0.98, 'x': 0.44, 'xanchor': 'center', 'yanchor': 'top'})
+    fig2.update_layout(title={'text': "Application Cycle Plot", 'y': 0.98, 'x': 0.44, 'xanchor': 'center', 'yanchor': 'top'})
+
+    # Displaying the download section
+    st.markdown("---")
     st.subheader("Downloads:")
     generate_html_download_link(fig2)
