@@ -1,4 +1,4 @@
-### Cycle Analzyer
+### Medical School Cycle Analzyer
 
 # Importing the required packages
 import streamlit as st
@@ -10,19 +10,31 @@ import plotly.express as px
 import base64
 from io import StringIO, BytesIO
 
-### Defining some functions for downloading html plotly charts
+### Defining some functions for downloading excel docs and html plotly graphs
+
+def generate_excel_download_link(example_df):
+    # Credit Excel: https://discuss.streamlit.io/t/how-to-add-a-download-excel-csv-function-to-a-button/4474/5
+    towrite = BytesIO()
+    example_df.to_excel(towrite, encoding="utf-8", index=False, header=True)  # write to BytesIO buffer
+    towrite.seek(0)  # reset pointer
+    b64 = base64.b64encode(towrite.read()).decode()
+    href = f'<a href="data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,{b64}" download="Medical School Cycle Analyzer Template.xlsx">Download Example Excel Template</a>'
+    return st.markdown(href, unsafe_allow_html=True)
+
 def generate_html_download_link(fig2):
     # Credit Plotly: https://discuss.streamlit.io/t/download-plotly-plot-as-html/4426/2
     towrite = StringIO()
     fig2.write_html(towrite, include_plotlyjs="cdn")
     towrite = BytesIO(towrite.getvalue().encode())
     b64 = base64.b64encode(towrite.read()).decode()
-    href = f'<a href="data:text/html;charset=utf-8;base64, {b64}" download="cycle_line_plot.html">Download Plot</a>'
+    href = f'<a href="data:text/html;charset=utf-8;base64, {b64}" download="cycle_line_plot.html">Download Application Cycle Plot</a>'
     return st.markdown(href, unsafe_allow_html=True)
 
 ### Setting the page title using streamlit
 st.set_page_config(page_title="Medical School Application Plotter")
-st.title("Medical School Application Plotter 🥼🩺📈")
+st.title("Medical School Application Plotter")  #🥼🩺📈
+no_sankey = Image.open("images/BanSankey.png")
+st.image(no_sankey)
 st.write("Link to toofastdan's Github Repo: https://github.com/toofastdan117/Med_School_Cycle_Analyzer")
 st.markdown("---")
 
@@ -36,14 +48,25 @@ st.markdown("---")
 
 ### Uploading an excel file containing schools, application actions, and dates.  Include an example + instructions with an expander.
 st.subheader("Upload a formatted Excel file:")
+
+# Download template excel file
+example_df = pd.read_excel("example_excel_files/Example Excel Template.xlsx", engine="openpyxl")
+generate_excel_download_link(example_df)
+
+# Example expander with instructions and a picture of an example excel upload
 with st.expander("Click Here for Instructions"):
-    st.write("1.  Make a new excel file.")
+    # Instructions
+    st.write("1.  Make a new excel file or download the template above.")
     st.write("2.  Create a 'Schools' column with your school names (could be dummy names if you want to keep them anonymous). Make sure to name this column 'Schools'.")
     st.write("3.  Create other columns for all other application events. You can name these whatever you want.")
     st.write("4.  Enter dates for all recorded events. For schools that have ignored you, or events that you haven't heard of yet, leave these blank.")
     st.write("5.  Save the file and make sure that it is in '.xlsx' format. Once this is done, it is ready to upload!")
+
+    # Display image of example excel file
     image = Image.open("images/example_excel_doc_dark.png")
     st.image(image, caption="Example of a formatted excel doc")
+
+# Request to upload an excel file
 uploaded_file = st.file_uploader("Upload an xlsx file:", type="xlsx")
 
 ### If a user uploaded an xlsx file, display it and display a plotly line graph
