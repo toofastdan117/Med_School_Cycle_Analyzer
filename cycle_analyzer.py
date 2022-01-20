@@ -15,6 +15,7 @@ import requests
 ### Defining some functions for downloading excel docs and html plotly graphs
 
 def generate_excel_download_link(example_df):
+    """Generates a download link for an excel file"""
     # Credit Excel: https://discuss.streamlit.io/t/how-to-add-a-download-excel-csv-function-to-a-button/4474/5
     towrite = BytesIO()
     example_df.to_excel(towrite, encoding="utf-8", index=False, header=True)  # write to BytesIO buffer
@@ -24,6 +25,7 @@ def generate_excel_download_link(example_df):
     return st.markdown(href, unsafe_allow_html=True)
 
 def generate_html_download_link(fig2):
+    """Generates a download link for the html plotly graphs"""
     # Credit Plotly: https://discuss.streamlit.io/t/download-plotly-plot-as-html/4426/2
     towrite = StringIO()
     fig2.write_html(towrite, include_plotlyjs="cdn")
@@ -75,9 +77,8 @@ st.markdown("---")
 data_input = False
 ### Excel choice
 if data_choice == 'Excel':
-    st.subheader("Upload a formatted Excel file:")
-
     # Download template excel file
+    st.subheader("Upload a formatted Excel file:")
     example_df = pd.read_excel("example_excel_files/Example Excel Template.xlsx", engine="openpyxl")
     generate_excel_download_link(example_df)
 
@@ -85,31 +86,31 @@ if data_choice == 'Excel':
     with st.expander("Click Here for Instructions"):
         # Instructions
         st.write("1.  Make a new excel file or download the template above.")
-        st.write(
-            "2.  Create a 'Schools' column with your school names (could be dummy names if you want to keep them anonymous). Make sure to name this column 'Schools'.")
+        st.write("2.  Create a 'Schools' column with your school names (could be dummy names if you want to keep them anonymous). Make sure to name this column 'Schools'.")
         st.write("3.  Create other columns for all other application events. You can name these whatever you want.")
-        st.write(
-            "4.  Enter dates for all recorded events. For schools that have ignored you, or events that you haven't heard of yet, leave these blank.")
-        st.write(
-            "5.  Save the file and make sure that it is in '.xlsx' format. Once this is done, it is ready to upload!")
+        st.write("4.  Enter dates for all recorded events. For schools that have ignored you, or events that you haven't heard of yet, leave these blank.")
+        st.write("5.  Save the file and make sure that it is in '.xlsx' format. Once this is done, it is ready to upload!")
 
-        # Display image of example excel file
+        # Display image of an example excel file
         image = Image.open("images/example_excel_doc_dark.png")
         st.image(image, caption="Example of a formatted excel doc")
 
     # Request to upload an excel file
-    uploaded_file = st.file_uploader("Upload an xlsx file:", type="xlsx")
+    uploaded_file = st.file_uploader("Upload an xlsx file:", type=("xlsx", "csv"))
 
     if uploaded_file:
         data_input = True
-        # Separating line
-        st.markdown("---")
 
-        ### Pandas to read the uploaded excel file and display it
-        df = pd.read_excel(uploaded_file, engine="openpyxl")
+        # Pandas to read the uploaded excel/csv file and display it
+        st.markdown("---")
+        if uploaded_file.name.endswith("xlsx"):
+            df = pd.read_excel(uploaded_file, engine="openpyxl")
+        elif uploaded_file.name.endswith("csv"):
+            df = pd.read_csv(uploaded_file)
         st.subheader("Uploaded excel file:")
         st.dataframe(df)
         st.markdown("---")
+
 ### Google sheets choice
 elif data_choice == 'Google Sheets':
     st.subheader("Upload data from Google Sheets:")
@@ -124,21 +125,21 @@ elif data_choice == 'Google Sheets':
         st.write("3.  Copy the generated link into the text box provided.")
     link = st.text_input('Insert the link to your published google sheet in this box.')
 
+    # Parsing the provided google sheets link
     if len(link) > 0 and link.endswith('pubhtml'):
         df = parse_google_sheets(link)
         data_input = True
         st.dataframe(df)
     elif len(link) > 0 and not link.endswith('pubhtml'):
-        st.write('The entered link is not correct. Please make sure you published the google sheet to the web and copied '
-                 'the link correctly.')
-### If a user uploaded an xlsx file, display it and display a plotly line graph
+        st.write('The entered link is not correct. Please make sure you published the google sheet to the web and copied the link correctly.')
+
+### If a user uploaded an xlsx file or provided a published google sheets doc, display the df and generate a plotly line graph
 if data_input:
     # Processing the dataframe by getting the columns (actions) and melting
     column_names = list(df.columns)
-    column_names = [s.lower() for s in column_names]
-    df.columns = column_names
-    column_names.remove("schools")
-    df = df.melt(id_vars="schools", value_vars=column_names, var_name="Actions", value_name="Dates")
+    col1 = column_names[0]
+    column_names = column_names[1:]
+    df = df.melt(id_vars=col1, value_vars=column_names, var_name="Actions", value_name="Dates")
     df["Dates"] = pd.to_datetime(df["Dates"])
 
     # Grouping the application actions and sorting by date
