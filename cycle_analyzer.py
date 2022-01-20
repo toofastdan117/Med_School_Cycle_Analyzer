@@ -98,7 +98,7 @@ if data_choice == 'Excel':
         st.image(image, caption="Example of a formatted excel doc")
 
     # Request to upload an excel file
-    uploaded_file = st.file_uploader("Upload an xlsx file:", type="xlsx")
+    uploaded_file = st.file_uploader("Upload an xlsx file:", type=("xlsx","csv"))
 
     if uploaded_file:
         data_input = True
@@ -106,7 +106,10 @@ if data_choice == 'Excel':
         st.markdown("---")
 
         ### Pandas to read the uploaded excel file and display it
-        df = pd.read_excel(uploaded_file, engine="openpyxl")
+        if uploaded_file.name.endswith("xlsx"):
+            df = pd.read_excel(uploaded_file, engine="openpyxl")
+        elif uploaded_file.name.endswith("csv"):
+            df = pd.read_csv(uploaded_file)
         st.subheader("Uploaded excel file:")
         st.dataframe(df)
         st.markdown("---")
