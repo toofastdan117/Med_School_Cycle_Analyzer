@@ -9,6 +9,8 @@ import datetime as datetime
 import plotly.express as px
 import base64
 from io import StringIO, BytesIO
+from bs4 import BeautifulSoup
+import requests
 
 ### Defining some functions for downloading excel docs and html plotly graphs
 
@@ -30,12 +32,31 @@ def generate_html_download_link(fig2):
     href = f'<a href="data:text/html;charset=utf-8;base64, {b64}" download="cycle_line_plot.html">Download Application Cycle Plot</a>'
     return st.markdown(href, unsafe_allow_html=True)
 
+def parse_google_sheets(link):
+    '''Returns a DataFrame that contains cycle data from google sheets. Requires that the sheet is in published mode.'''
+    page = requests.get(link).text
+    soup = BeautifulSoup(page, "html.parser")
+    # List that holds each row as a list
+    input_data = []
+    for row in soup.find_all('tr'):
+        # List of elements in the row
+        row_data = []
+        for element in row.find_all('td'):
+            row_data.append(element.get_text())
+        input_data.append(row_data)
+    column_names = [str(name) for name in input_data[1]]
+    # Convert list to DataFrame and return
+    return pd.DataFrame(input_data[2:], columns=column_names)
+
 ### Setting the page title using streamlit
 st.set_page_config(page_title="Medical School Application Plotter")
 st.title("Medical School Application Plotter")  #🥼🩺📈
+st.markdown("#### Created by [TooFastDan](https://github.com/toofastdan117)")
 no_sankey = Image.open("images/BanSankey.png")
 st.image(no_sankey)
-st.write("Link to toofastdan's Github Repo: https://github.com/toofastdan117/Med_School_Cycle_Analyzer")
+st.markdown("This is a tool for visualizing your application cycle using a line plot. We believe that line plots provide "
+            "more useful data for future applicants than typical Sankey diagrams. The github repository for this "
+            "project is located [here](https://github.com/toofastdan117/Med_School_Cycle_Analyzer).")
 st.markdown("---")
 
 ### User imput start date of AMCAS submission and current date
@@ -46,40 +67,72 @@ end_date = st.date_input("What is the current date or the date of the end of you
 end_date = pd.to_datetime(end_date)
 st.markdown("---")
 
-### Uploading an excel file containing schools, application actions, and dates.  Include an example + instructions with an expander.
-st.subheader("Upload a formatted Excel file:")
+### Choose option for input data
+st.subheader("Select a Method:")
+data_choice = st.selectbox('Would you like to upload an excel document, or link a google sheet?', ('Excel', 'Google Sheets'))
+st.markdown("---")
 
-# Download template excel file
-example_df = pd.read_excel("example_excel_files/Example Excel Template.xlsx", engine="openpyxl")
-generate_excel_download_link(example_df)
+data_input = False
+### Excel choice
+if data_choice == 'Excel':
+    st.subheader("Upload a formatted Excel file:")
 
-# Example expander with instructions and a picture of an example excel upload
-with st.expander("Click Here for Instructions"):
+    # Download template excel file
+    example_df = pd.read_excel("example_excel_files/Example Excel Template.xlsx", engine="openpyxl")
+    generate_excel_download_link(example_df)
+
+    # Example expander with instructions and a picture of an example excel upload
+    with st.expander("Click Here for Instructions"):
+        # Instructions
+        st.write("1.  Make a new excel file or download the template above.")
+        st.write(
+            "2.  Create a 'Schools' column with your school names (could be dummy names if you want to keep them anonymous). Make sure to name this column 'Schools'.")
+        st.write("3.  Create other columns for all other application events. You can name these whatever you want.")
+        st.write(
+            "4.  Enter dates for all recorded events. For schools that have ignored you, or events that you haven't heard of yet, leave these blank.")
+        st.write(
+            "5.  Save the file and make sure that it is in '.xlsx' format. Once this is done, it is ready to upload!")
+
+        # Display image of example excel file
+        image = Image.open("images/example_excel_doc_dark.png")
+        st.image(image, caption="Example of a formatted excel doc")
+
+    # Request to upload an excel file
+    uploaded_file = st.file_uploader("Upload an xlsx file:", type="xlsx")
+
+    if uploaded_file:
+        data_input = True
+        # Separating line
+        st.markdown("---")
+
+        ### Pandas to read the uploaded excel file and display it
+        df = pd.read_excel(uploaded_file, engine="openpyxl")
+        st.subheader("Uploaded excel file:")
+        st.dataframe(df)
+        st.markdown("---")
+### Google sheets choice
+elif data_choice == 'Google Sheets':
+    st.subheader("Upload data from Google Sheets:")
+    st.markdown('[Link to Sample Google Sheet](https://docs.google.com/spreadsheets/d/1m-pWOmML_MeEa71G2e2FLCWyQzNZdW4s9L1y7Ap5vEY/edit?usp=sharing)')
     # Instructions
-    st.write("1.  Make a new excel file or download the template above.")
-    st.write("2.  Create a 'Schools' column with your school names (could be dummy names if you want to keep them anonymous). Make sure to name this column 'Schools'.")
-    st.write("3.  Create other columns for all other application events. You can name these whatever you want.")
-    st.write("4.  Enter dates for all recorded events. For schools that have ignored you, or events that you haven't heard of yet, leave these blank.")
-    st.write("5.  Save the file and make sure that it is in '.xlsx' format. Once this is done, it is ready to upload!")
+    with st.expander("Click Here for Instructions"):
+        # Instructions
+        st.write("1.  Create a google sheet with your data. Feel free to make a copy of the provided template. The first column "
+                 "must contain schools. Other columns can be any dates of choice (e.g. secondaries, interviews, "
+                 "acceptances, etc.")
+        st.write("2.  Publish your google sheet by clicking the following: File -> Share -> Publish to Web.")
+        st.write("3.  Copy the generated link into the text box provided.")
+    link = st.text_input('Insert the link to your published google sheet in this box.')
 
-    # Display image of example excel file
-    image = Image.open("images/example_excel_doc_dark.png")
-    st.image(image, caption="Example of a formatted excel doc")
-
-# Request to upload an excel file
-uploaded_file = st.file_uploader("Upload an xlsx file:", type="xlsx")
-
+    if len(link) > 0 and link.endswith('pubhtml'):
+        df = parse_google_sheets(link)
+        data_input = True
+        st.dataframe(df)
+    elif len(link) > 0 and not link.endswith('pubhtml'):
+        st.write('The entered link is not correct. Please make sure you published the google sheet to the web and copied '
+                 'the link correctly.')
 ### If a user uploaded an xlsx file, display it and display a plotly line graph
-if uploaded_file:
-    # Separating line
-    st.markdown("---")
-
-    ### Pandas to read the uploaded excel file and display it
-    df = pd.read_excel(uploaded_file, engine="openpyxl")
-    st.subheader("Uploaded excel file:")
-    st.dataframe(df)
-    st.markdown("---")
-
+if data_input:
     # Processing the dataframe by getting the columns (actions) and melting
     column_names = list(df.columns)
     column_names = [s.lower() for s in column_names]
