@@ -1,1 +1,1 @@
-web sh setup.sh && streamlit run cycle_analyzer.py
+web sh setup.sh && streamlit run main.py
