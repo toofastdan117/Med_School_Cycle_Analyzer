@@ -28,6 +28,7 @@ def collect_excel():
         return pd.DataFrame()
 
 def collect_google():
+    '''Collects data from a google sheet and returns a data frame of it.'''
     # Instructions
     with st.expander("Instructions"):
         st.markdown("1. Create a google sheet with your data. Feel free to make a copy of the [sample template]"

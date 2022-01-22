@@ -38,7 +38,8 @@ def convert_sums(data):
     cleaned_data = cleaned_data.ffill()
     return cleaned_data
 
-def convert_dan_line(df):
+def convert_fancy_line(df):
+    '''Returns a data frame of items used in the fancy line plot.'''
     # Asking users for a start an end date from a calendar input
     st.subheader("Enter in the Start and End Dates of your Application Cycle:")
     start_date = st.date_input("When did you submit your AMCAS primary application?")
