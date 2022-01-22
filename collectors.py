@@ -7,7 +7,7 @@ def collect_excel():
     '''This method collects data from an .xlsx or .xsv file and returns a data frame of the input.'''
     # Instructions
     with st.expander("Instructions"):
-        st.markdown("1. Make a new excel file or download [this template]().\n"
+        st.markdown("1. Make a new excel file or download [this template](https://github.com/toofastdan117/Med_School_Cycle_Analyzer/blob/main/example_excel_files/Example%20Excel%20Template.xlsx?raw=true).\n"
                     "2. Create a 'Schools' column with your school names (could be dummy names if you want to keep them "
                     "anonymous). Make sure to name this column 'Schools'.\n"
                     "3. Create other columns for all other application events. You can name these whatever you want.\n"
