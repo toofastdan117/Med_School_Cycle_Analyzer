@@ -1,6 +1,7 @@
 import pandas as pd
 import datetime as dt
 import numpy as np
+import streamlit as st
 
 def convert_sums(data):
     '''Converts raw input into sums of actions for every date.'''
@@ -38,11 +39,20 @@ def convert_sums(data):
     return cleaned_data
 
 def convert_dan_line(df):
+    # Asking users for a start an end date from a calendar input
+    st.subheader("Enter in the Start and End Dates of your Application Cycle:")
+    start_date = st.date_input("When did you submit your AMCAS primary application?")
+    start_date = pd.to_datetime(start_date)
+    end_date = st.date_input("What is the current date or the date of the end of your application cycle?")
+    end_date = pd.to_datetime(end_date)
+    st.markdown("---")
+
+    # Parsing the supplied df, dropping unnamed columns and melting to transpose data
+    df = df.loc[:, ~df.columns.str.contains("Unnamed")]
     column_names = list(df.columns)
-    column_names = [s.lower() for s in column_names]
-    df.columns = column_names
-    column_names.remove("schools")
-    df = df.melt(id_vars="schools", value_vars=column_names, var_name="Actions", value_name="Dates")
+    col1 = column_names[0]
+    column_names = column_names[1:]
+    df = df.melt(id_vars=col1, value_vars=column_names, var_name="Actions", value_name="Dates")
     df["Dates"] = pd.to_datetime(df["Dates"])
 
     # Grouping the application actions and sorting by date
