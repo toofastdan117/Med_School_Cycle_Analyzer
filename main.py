@@ -6,7 +6,7 @@ from plotters import line_graph, dot_graph, dan_line
 # Page Settings
 import converters
 
-st.set_page_config(page_title="CycleVis",  page_icon="resources/BanSankey.png")
+st.set_page_config(page_title="CycleVis",  page_icon="images/BanSankey.png")
 
 # Welcome
 st.title("Hi! Welcome to CycleVis.")
