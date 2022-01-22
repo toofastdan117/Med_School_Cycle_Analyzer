@@ -20,7 +20,7 @@ def generate_html_download_link(fig2):
 def generate(df):
     """Generates a fancy plotly graph that is interactive and downloadable"""
     ### Processing the dataframe from the converters file
-    df = converters.convert_dan_line(df)
+    df = converters.convert_fancy_line(df)
     actions = df["Actions"].unique()
 
     ### Selecting colors for the plotly line graph

@@ -4,7 +4,7 @@ from matplotlib import dates as mdates
 import streamlit as st
 
 def generate(data):
-    '''Creates the line graph from the raw data frame.'''
+    '''Creates a simple line graph from the raw data frame.'''
     # Convert to proper sum format
     data = converters.convert_sums(data)
     title = st.text_input("Choose a title", value="Application Cycle")
