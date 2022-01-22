@@ -4,9 +4,18 @@ from bs4 import BeautifulSoup
 import requests
 
 def collect_excel():
+    '''This method collects data from an .xlsx or .xsv file and returns a data frame of the input.'''
     # Instructions
     with st.expander("Instructions"):
-        st.markdown("Coming soon...")
+        st.markdown("1. Make a new excel file or download [this template]().\n"
+                    "2. Create a 'Schools' column with your school names (could be dummy names if you want to keep them "
+                    "anonymous). Make sure to name this column 'Schools'.\n"
+                    "3. Create other columns for all other application events. You can name these whatever you want.\n"
+                    "4. Enter dates for all recorded events. For schools that have ignored you, or events that you "
+                    "haven't heard of yet, leave these blank.\n"
+                    "5. Save the file and make sure that it is in '.xlsx' format. Once this is done, it is ready to "
+                    "upload!")
+        st.image('images/example_excel_doc_dark.png')
 
     # Request to upload an excel file
     file = st.file_uploader("Select your file", type=("xlsx", "csv"))
@@ -21,7 +30,12 @@ def collect_excel():
 def collect_google():
     # Instructions
     with st.expander("Instructions"):
-        st.markdown("Coming soon...")
+        st.markdown("1. Create a google sheet with your data. Feel free to make a copy of the [sample template]"
+                    "(https://docs.google.com/spreadsheets/d/1m-pWOmML_MeEa71G2e2FLCWyQzNZdW4s9L1y7Ap5vEY/edit?usp=sharing). "
+                    "The first column must contain schools. Other columns can be any dates of choice (e.g. secondaries,"
+                    " interviews, acceptances, etc.\n"
+                    "2. Publish your google sheet by clicking the following: File -> Share -> Publish to Web.\n"
+                    "3. Copy the generated link into the text box provided.")
     # Link collection
     link = st.text_input("Enter a link")
     # Collect actual data
