@@ -29,7 +29,7 @@ there are a few components you should know about:
 1. main.py is run by streamlit and is the backbone for the user interface
 2. Collectors are methods inside the collectors.py file. They are used to gather input from the user, and convert
 it into a pandas DataFrame for further manipulation.
-3. Converts are methods inside the converters.py file. They are used to convert the raw data into other types of
+3. Converters are methods inside the converters.py file. They are used to convert the raw data into other types of
 DataFrames that are used for generating a plot.
 4. Plotters are modules that are used to display a visualization that is selected by the user. Generally they will call
 a converter to convert the raw data into a DataFrame that is specific for this plot, generate the plot, and output it
