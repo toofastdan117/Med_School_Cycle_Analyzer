@@ -38,7 +38,7 @@ if not data_raw.empty:
     # Choose Visualizations
     st.subheader("Pick a Visualization")
     graph_choice = st.selectbox("Choose a visualization. You can always come back and switch to another one later.",
-                                ("","Fancy Line","Simple Line","Dot"))
+                                ("Fancy Line","Simple Line","Dot"))
     if graph_choice == "Fancy Line":
         fancy_line.generate(data_raw)
     elif graph_choice == "Simple Line":

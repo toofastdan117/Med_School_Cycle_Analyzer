@@ -22,6 +22,7 @@ def generate(df):
     ### Processing the dataframe from the converters file
     df = converters.convert_fancy_line(df)
     actions = df["Actions"].unique()
+    col1 = df.columns[0]
 
     ### Selecting colors for the plotly line graph
     st.subheader("Customization Section - Pick Colors")
@@ -42,7 +43,7 @@ def generate(df):
     st.subheader("Application Cycle Line Graph")
     title = st.text_input("Type a title for your graph", value="Application Cycle")
     fig = px.line(df, x="Dates", y="tracker", color="Actions", color_discrete_map=action_color_dict,
-                  hover_data=["schools", "Actions", "Dates"], markers=True, line_shape="hv",
+                  hover_data=[col1, "Actions", "Dates"], markers=True, line_shape="hv",
                   labels={
                       "Dates": "Dates",
                       "tracker": "Number of Events",
@@ -61,7 +62,7 @@ def generate(df):
     w = st.number_input("Optional: Input the width (in pixels) of your downloadable graph", value=1200, max_value=10000)
     h = st.number_input("Optional: Input the height (in pixels) of your downloadable graph", value=700, max_value=10000)
     fig2 = px.line(df, x="Dates", y="tracker", color="Actions",
-                   hover_data=["schools", "Actions", "Dates"], markers=True, line_shape="hv",
+                   hover_data=[col1, "Actions", "Dates"], markers=True, line_shape="hv",
                    color_discrete_map=action_color_dict,
                    template=response_answer, width=w, height=h)
 
