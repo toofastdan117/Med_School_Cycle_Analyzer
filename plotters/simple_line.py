@@ -1,5 +1,5 @@
 import converters
-from plotnine import *
+from plotnine import ggplot, aes, geom_line, scale_x_date, labs, theme
 from mizani.breaks import date_breaks
 from mizani.formatters import date_format
 import streamlit as st
