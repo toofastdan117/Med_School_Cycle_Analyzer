@@ -73,13 +73,15 @@ def convert_fancy_line(df):
                 numbers.append(n)
     df_sort1["tracker"] = numbers
 
-    # Adding the start date of the cycle and the current date and sorting
+    # Adding the start and end date of the cycle and sorting
+    df_filt = df_sort1[df_sort1["Dates"].notna()]
+    start_date = min(df_filt["Dates"])
+    end_date = max(df_filt["Dates"])
     df_gb2 = df_sort1.groupby("Actions")
     df_sort_list2 = []
     for name, group in df_gb2:
-        df_temp1 = {col1: "Start", "Actions": group["Actions"].unique()[0], "Dates": min(df_sort1["Dates"]),
-                    "tracker": 0}
-        df_temp2 = {col1: "End", "Actions": group["Actions"].unique()[0], "Dates": max(df_sort1["Dates"]),
+        df_temp1 = {col1: "Start", "Actions": group["Actions"].unique()[0], "Dates": start_date, "tracker": 0}
+        df_temp2 = {col1: "End", "Actions": group["Actions"].unique()[0], "Dates": end_date,
                     "tracker": np.max(group["tracker"])}
         group = group.append([df_temp1, df_temp2], ignore_index=True)
         group = group.sort_values(["Dates", "tracker"], ascending=True)
