@@ -3,7 +3,6 @@ from plotnine import ggplot, aes, geom_point, scale_x_date, theme, labs
 import pandas as pd
 from mizani.breaks import date_breaks
 from mizani.formatters import date_format
-import numpy as np
 
 def generate(data):
     '''Generates a Cleveland dot plot with all schools and actions for schools.'''
