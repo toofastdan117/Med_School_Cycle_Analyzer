@@ -1,22 +1,27 @@
 import converters
-from matplotlib import pyplot as plt
-from matplotlib import dates as mdates
+from plotnine import *
+from mizani.breaks import date_breaks
+from mizani.formatters import date_format
 import streamlit as st
+import pandas as pd
 
 def generate(data):
     '''Creates a simple line graph from the raw data frame.'''
     # Convert to proper sum format
     data = converters.convert_sums(data)
-    title = st.text_input("Choose a title", value="Application Cycle")
-    fig = plt.figure()
-    plt.style.use('ggplot')
-    ax = fig.add_subplot(1,1,1)
-    for column in data.columns:
-        ax.plot(data.index, data[column], label=column)
-    ax.legend(bbox_to_anchor=(1.04,0.5), loc='center left', frameon=False)
-    ax.xaxis.set_major_formatter(mdates.DateFormatter('%b'))
-    ax.set_xlabel("Month")
-    ax.set_ylabel("Count")
-    ax.set_title(title)
 
-    st.pyplot(fig)
+    # Melt for plotting
+    data['date'] = data.index
+    melted = data.melt(id_vars='date', value_vars=data.columns[0:len(data.columns)-1], var_name="Actions",
+                               value_name="Count")
+
+    input_title = st.text_input("Choose a title", value="Application Cycle")
+    # Plot
+    plot = (
+            ggplot(melted, aes(x='date', y='Count', color='Actions'))
+            + geom_line()
+            + scale_x_date(breaks=date_breaks('1 months'), labels=date_format('%b'))
+            + labs(x="", y="Count", title = input_title)
+            + theme(figure_size=(5,3))
+    )
+    st.pyplot(plot.draw())
