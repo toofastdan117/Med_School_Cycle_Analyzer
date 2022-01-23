@@ -11,7 +11,10 @@ def convert_sums(data):
     for column in data.columns:
         if column != data.columns[0]:
             # Convert to date time
-            data[column] = pd.to_datetime(data[column])
+            try:
+                data[column] = pd.to_datetime(data[column])
+            except:
+                print(f"Error: some of your dates are not formatted correctly in {column}")
 
             # Gather number of actions at each date for every type of action
             temp_dict = {}
@@ -34,27 +37,20 @@ def convert_sums(data):
     cleaned_data = cleaned_data.sort_index()
     # Fill in any missing days
     cleaned_data = cleaned_data.reindex(pd.date_range(start=min(cleaned_data.index), end=max(cleaned_data.index)))
-    # Fill in missing data
+    # Fill in missing data and drop unnamed columns
     cleaned_data = cleaned_data.ffill()
+    cleaned_data = cleaned_data.loc[:, ~cleaned_data.columns.str.contains("Unnamed")]
     return cleaned_data
 
 def convert_fancy_line(df):
-    '''Returns a data frame of items used in the fancy line plot.'''
-    # Asking users for a start an end date from a calendar input
-    st.subheader("Enter in the Start and End Dates of your Application Cycle:")
-    start_date = st.date_input("When did you submit your AMCAS primary application?")
-    start_date = pd.to_datetime(start_date)
-    end_date = st.date_input("What is the current date or the date of the end of your application cycle?")
-    end_date = pd.to_datetime(end_date)
-    st.markdown("---")
-
     # Parsing the supplied df, dropping unnamed columns and melting to transpose data
     df = df.loc[:, ~df.columns.str.contains("Unnamed")]
-    column_names = list(df.columns)
-    col1 = column_names[0]
-    column_names = column_names[1:]
-    df = df.melt(id_vars=col1, value_vars=column_names, var_name="Actions", value_name="Dates")
-    df["Dates"] = pd.to_datetime(df["Dates"])
+    col1 = df.columns[0]
+    df = df.melt(id_vars=col1, value_vars=df.columns[1:], var_name="Actions", value_name="Dates")
+    try:
+        df["Dates"] = pd.to_datetime(df["Dates"])
+    except:
+        print("Error: some of your dates are not formatted correctly - Please double check them.")
 
     # Grouping the application actions and sorting by date
     df_gb1 = df.groupby("Actions")
@@ -81,8 +77,9 @@ def convert_fancy_line(df):
     df_gb2 = df_sort1.groupby("Actions")
     df_sort_list2 = []
     for name, group in df_gb2:
-        df_temp1 = {"schools": "Start", "Actions": group["Actions"].unique()[0], "Dates": start_date, "tracker": 0}
-        df_temp2 = {"schools": "End", "Actions": group["Actions"].unique()[0], "Dates": end_date,
+        df_temp1 = {col1: "Start", "Actions": group["Actions"].unique()[0], "Dates": min(df_sort1["Dates"]),
+                    "tracker": 0}
+        df_temp2 = {col1: "End", "Actions": group["Actions"].unique()[0], "Dates": max(df_sort1["Dates"]),
                     "tracker": np.max(group["tracker"])}
         group = group.append([df_temp1, df_temp2], ignore_index=True)
         group = group.sort_values(["Dates", "tracker"], ascending=True)
