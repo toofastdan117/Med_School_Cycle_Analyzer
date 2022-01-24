@@ -8,7 +8,7 @@ def generate(data):
       # Grab title
       title_label = st.text_input("Choose a title", value="Application Cycle")
 
-      plot = (ggplot(data, aes(x = 'Date', fill = 'Action'))
+      plot = (ggplot(data, aes(x='Date', fill='Action', color='Action'))
               + geom_bar()
               + scale_x_date(date_breaks = '1 months', date_labels = '%b')
               + labs(x="", y="Count", title = title_label))
