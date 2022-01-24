@@ -120,8 +120,12 @@ def convert_bar(data):
         # For each date, check each school and assign it its highest status
         output = []
         for date in all_dates:
+            # Iterate through each school
             for index, row in data.iterrows():
+                # Go through each status by order of priority
                 for key, value in assigned_labels.items():
+                    # If highest status has a date, grab it and move on to next school
+                    # If it is null, continue checking status until get one
                     if not pd.isnull(row[key]) and date >= row[key] and value !=999:
                         output.append([date, key])
                         break
