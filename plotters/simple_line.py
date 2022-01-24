@@ -1,7 +1,6 @@
 import converters
 from plotnine import ggplot, aes, geom_line, scale_x_date, labs, theme
 import streamlit as st
-import pandas as pd
 
 def generate(data):
     '''Creates a simple line graph from the raw data frame.'''
