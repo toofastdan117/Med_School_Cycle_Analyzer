@@ -1,7 +1,5 @@
 import converters
 from plotnine import ggplot, aes, geom_line, scale_x_date, labs, theme
-from mizani.breaks import date_breaks
-from mizani.formatters import date_format
 import streamlit as st
 import pandas as pd
 
@@ -20,7 +18,7 @@ def generate(data):
     plot = (
             ggplot(melted, aes(x='date', y='Count', color='Actions'))
             + geom_line()
-            + scale_x_date(breaks=date_breaks('1 months'), labels=date_format('%b'))
+            + scale_x_date(date_breaks = '1 months', date_labels='%b')
             + labs(x="", y="Count", title = input_title)
             + theme(figure_size=(5,3))
     )
