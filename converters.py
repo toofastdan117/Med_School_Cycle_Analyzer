@@ -126,3 +126,5 @@ def convert_bar(data):
                         output.append([date, key])
                         break
         return pd.DataFrame(output, columns=['Date', 'Action'])
+    else:
+        return pd.DataFrame()
