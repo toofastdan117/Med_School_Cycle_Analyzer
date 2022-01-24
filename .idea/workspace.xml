@@ -2,12 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="fba1e685-626c-4d64-8998-993664fa0ab1" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/Cycle Analyzer.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/Cycle Analyzer.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/Med_School_Cycle_Analyzer.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/converters.py" beforeDir="false" afterPath="$PROJECT_DIR$/converters.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/notebooks for testing/Cycle Analyzer.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/notebooks for testing/Cycle Analyzer.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/plotters/dot_graph.py" beforeDir="false" afterPath="$PROJECT_DIR$/plotters/dot_graph.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
