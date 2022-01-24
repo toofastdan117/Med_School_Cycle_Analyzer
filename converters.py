@@ -125,6 +125,6 @@ def convert_bar(data):
                     if not pd.isnull(row[key]) and date >= row[key] and value !=999:
                         output.append([date, key])
                         break
-        return pd.DataFrame(output, columns=['Date', 'Action'])
+        return pd.DataFrame(output, columns=['Date', 'Best Outcome'])
     else:
         return pd.DataFrame()
