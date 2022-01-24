@@ -86,3 +86,42 @@ def convert_fancy_line(df):
         df_sort_list2.append(group)
     df_sort2 = pd.concat(df_sort_list2, axis=0).reset_index(drop=True)
     return df_sort2
+
+def convert_bar(data):
+    # Label the data to obtain priorities
+    st.subheader("I need some help labeling your data...")
+    labels = {"" : 999, "Primary Submitted" : 8, "Secondary Received" : 7, "Secondary Submitted" : 6, "Application Complete" : 5,
+              "Interview Received" : 4, "Interview Day" : 3, "Rejection" : 2, "Waitlist" : 1, "Acceptance" : 0,
+              "None of the Above" : 999}
+    assigned_labels = {}
+    for column in data.columns[1:]:
+        assigned_label = st.selectbox(f"Assign a label for the column: {column}", labels.keys())
+        if len(assigned_label) > 0:
+            assigned_labels[column] = labels[assigned_label]
+    # Continue after assignments made
+    if len(assigned_labels) == len(data.columns[1:]):
+        # Sort assigned labels
+        assigned_labels = dict(sorted(assigned_labels.items(), key=lambda item: item[1]))
+
+        # Obtain a list of all dates between min and max
+        input_dates = []
+        for col in data.columns[1:]:
+            for date in data[col]:
+                input_dates.append(date)
+        input_dates = pd.to_datetime(input_dates).dropna()
+        all_dates = pd.date_range(start=min(input_dates), end=max(input_dates))
+
+        # Convert raw data into datetime
+        for column in data.columns[1:]:
+            data[column] = pd.to_datetime(data[column])
+
+        # For each date, check each school and assign it its highest status
+        output = []
+        for date in all_dates:
+            for index, row in data.iterrows():
+                for key, value in assigned_labels.items():
+                    if not pd.isnull(row[key]) and date >= row[key]:
+                        output.append([date, key])
+                        break
+        return pd.DataFrame(output, columns=['Date', 'Action'])
+

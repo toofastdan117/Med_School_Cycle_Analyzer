@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 import collectors
-from plotters import simple_line, dot_graph, fancy_line
+from plotters import simple_line, dot_graph, fancy_line, bar_graph
 
 # Page Settings
 import converters
@@ -38,10 +38,12 @@ if not data_raw.empty:
     # Choose Visualizations
     st.subheader("Pick a Visualization")
     graph_choice = st.selectbox("Choose a visualization. You can always come back and switch to another one later.",
-                                ("Fancy Line","Simple Line","Dot"))
+                                ("Fancy Line","Simple Line","Dot", "Bar"))
     if graph_choice == "Fancy Line":
         fancy_line.generate(data_raw)
     elif graph_choice == "Simple Line":
         simple_line.generate(data_raw)
     elif graph_choice == "Dot":
         dot_graph.generate(data_raw)
+    elif graph_choice == "Bar":
+        bar_graph.generate(data_raw)
