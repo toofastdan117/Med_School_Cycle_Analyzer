@@ -127,8 +127,8 @@ def convert_bar(data):
                     # If highest status has a date, grab it and move on to next school
                     # If it is null, continue checking status until get one
                     if not pd.isnull(row[key]) and date >= row[key] and value !=999:
-                        output.append([date, key])
+                        output.append([date, key, row[data.columns[0]]])
                         break
-        return pd.DataFrame(output, columns=['Date', 'Best Outcome'])
+        return pd.DataFrame(output, columns=['Date', 'Best Outcome','School'])
     else:
         return pd.DataFrame()
