@@ -8,6 +8,7 @@ def generate(data):
     melted = data.melt(id_vars=data.columns[0], value_vars=data.columns[1:], var_name='Actions', value_name='date')
     height = len(melted.columns[0]) * 1
     melted['date'] = pd.to_datetime(melted['date'])
+    melted = melted[~melted["Actions"].str.contains("Unnamed")]
     p = (ggplot(melted, aes(x = 'date', y = melted.columns[0], color='Actions'))
          + geom_point()
          + theme(figure_size=(5, height))
