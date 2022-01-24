@@ -93,7 +93,7 @@ def convert_bar(data):
     # Label the data to obtain priorities
     st.subheader("I need some help labeling your data...")
     labels = {"" : 999, "Primary Submitted" : 8, "Secondary Received" : 7, "Secondary Submitted" : 6, "Application Complete" : 5,
-              "Interview Received" : 4, "Interview Day" : 3, "Rejection" : 2, "Waitlist" : 1, "Acceptance" : 0,
+              "Interview Received" : 4, "Interview Day" : 3, "Rejection" : 2, "Waitlist" : 1, "Acceptance" : 0, "Withdrawn" : -1,
               "None of the Above" : 999}
     assigned_labels = {}
     for column in data.columns[1:]:
