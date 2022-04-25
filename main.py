@@ -9,7 +9,14 @@ import converters
 st.set_page_config(page_title="CycleVis", page_icon="images/BanSankey.png")
 
 # Welcome
-st.title("Hi! Welcome to CycleVis.")
+st.title("CycleVis is now CycleTrack.")
+st.markdown("We've moved! Since January 2022, we've expanded all CycleVis features into part of our full feature application \
+tracking system, CycleTrack. You can visit CycleTrack's website [here](https://cycletrack.docs2be.org) or the GitHub \
+repository [here](https://github.com/RunningMSN/CycleTrack). You may continue using CycleVis, but please note this  \
+webapp may eventually shut down without notice.")
+st.markdown("---")
+
+st.title("Hi. Welcome to CycleVis!")
 st.markdown("A medical school application cycle visualization tool by [TooFastDan](https://github.com/toofastdan117) and"
             " [RunningMSN](https://github.com/RunningMSN). To see how this works, visit the "
             "[github repository](https://github.com/toofastdan117/Med_School_Cycle_Analyzer).")
